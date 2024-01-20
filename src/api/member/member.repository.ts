@@ -15,7 +15,7 @@ export class MemberRepository extends AbstractRepository<Member> {
   constructor(
     private readonly memberRepository = AppDataSource.getRepository(Member)
   ) {
-    super(memberRepository);
+    super('Member', memberRepository);
   }
 
   async findByFilter(filter: GetMembersFilterDto) {

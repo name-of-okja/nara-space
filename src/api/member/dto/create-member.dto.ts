@@ -1,20 +1,15 @@
 import {
   IsArray,
-  IsIn,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   Matches,
-  Max,
   MaxLength,
-  Min,
   ValidateNested,
-  isNotEmpty,
 } from 'class-validator';
 import { PointGeoMetry } from '../../../libs/common';
-import { Subject } from '../../../entity';
 import { Expose, Type } from 'class-transformer';
+import { ScoreDto } from '../../score/dto/score.dto';
 
 export class CreateMemberDto {
   @IsString()
@@ -39,24 +34,10 @@ export class CreateMemberDto {
   location: PointGeoMetry;
 
   @ValidateNested()
-  @Type(() => CreateMemberScoreDto)
+  @Type(() => ScoreDto)
   @IsOptional()
   @IsNotEmpty()
   @IsArray()
   @Expose()
-  scores?: CreateMemberScoreDto[];
-}
-
-class CreateMemberScoreDto {
-  @IsIn(['math', 'science', 'english'], {
-    message: 'must match ["math", "science", "english"]',
-  })
-  @Expose()
-  subject: Subject;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  @Expose()
-  score: number;
+  scores?: ScoreDto[];
 }

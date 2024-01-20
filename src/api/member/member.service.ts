@@ -18,7 +18,7 @@ export class MemberService {
   }
 
   async create(payload: CreateMemberDto) {
-    if (this.memberRepository.validationNickname(payload.nickname)) {
+    if (await this.memberRepository.validationNickname(payload.nickname)) {
       throw new BadRequestException(`nickname is exist`);
     }
 
@@ -28,6 +28,6 @@ export class MemberService {
   }
 
   async deleteByKey(where: FindOptionsWhere<Member>) {
-    return this.memberRepository.findOneAndRemove(where);
+    return this.memberRepository.findOneAndRemove(where, { scores: true });
   }
 }

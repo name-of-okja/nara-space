@@ -37,7 +37,7 @@ export class Score extends AbstractEntity<Score> {
   @UpdateDateColumn({ type: 'timestamp', nullable: false, name: 'updatedAt' })
   updatedAt: Date;
 
-  @ManyToOne(() => Member, (member) => member.scores)
+  @ManyToOne(() => Member, (member) => member.scores, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'memberId' })
   member: Member;
 }

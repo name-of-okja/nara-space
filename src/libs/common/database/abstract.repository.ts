@@ -11,6 +11,7 @@ import { NotFoundException } from '../structure';
 
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   constructor(
+    public readonly entityName: string,
     protected readonly entityRepository: Repository<T>,
     protected readonly entityManager = AppDataSource.manager
   ) {}
@@ -33,7 +34,7 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     const entity = await this.entityRepository.findOne({ where, relations });
 
     if (!entity) {
-      throw new NotFoundException('Entity was not found');
+      throw new NotFoundException(`${this.entityName} was not found`);
     }
 
     return entity;
@@ -49,14 +50,17 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     );
 
     if (!updateResult.affected) {
-      throw new NotFoundException('Entity was not found');
+      throw new NotFoundException(`${this.entityName} was not found`);
     }
 
     return this.findOne(where);
   }
 
-  async findOneAndRemove(where: FindOptionsWhere<T>) {
-    const entity = await this.findOne(where);
+  async findOneAndRemove(
+    where: FindOptionsWhere<T>,
+    relations?: FindOptionsRelations<T>
+  ) {
+    const entity = await this.findOne(where, relations);
 
     return this.entityManager.remove(entity);
   }
