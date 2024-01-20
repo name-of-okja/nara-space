@@ -1,11 +1,9 @@
 import 'reflect-metadata';
 import { DataSource, MultiPolygon } from 'typeorm';
-import { Member } from './entity/member.entity';
-import { Score } from './entity/score.entity';
-import { District } from './entity/district.entity';
 import { Observable, map } from 'rxjs';
 import * as fs from 'fs';
 import { env } from './libs/common';
+import { District, Member, Score } from './entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

@@ -11,8 +11,8 @@ import { NotFoundException } from '../structure';
 
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   constructor(
-    private readonly entityRepository: Repository<T>,
-    private readonly entityManager = AppDataSource.manager
+    protected readonly entityRepository: Repository<T>,
+    protected readonly entityManager = AppDataSource.manager
   ) {}
 
   async create(entity: T): Promise<T> {
@@ -55,7 +55,9 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return this.findOne(where);
   }
 
-  async findOneAndDelete(where: FindOptionsWhere<T>) {
-    return this.entityRepository.delete(where);
+  async findOneAndRemove(where: FindOptionsWhere<T>) {
+    const entity = await this.findOne(where);
+
+    return this.entityManager.remove(entity);
   }
 }
