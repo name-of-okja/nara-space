@@ -20,7 +20,9 @@ export class ScoreService {
         }
       );
     }
-    const score = plainToInstance(Score, payload);
+    const score = plainToInstance(Score, payload, {
+      excludeExtraneousValues: true,
+    });
 
     return this.scoreRepository.create(score);
   }

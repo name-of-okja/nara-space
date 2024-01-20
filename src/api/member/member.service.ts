@@ -22,7 +22,9 @@ export class MemberService {
       throw new BadRequestException(`nickname is exist`);
     }
 
-    const member = plainToInstance(Member, payload);
+    const member = plainToInstance(Member, payload, {
+      excludeExtraneousValues: true,
+    });
 
     return this.memberRepository.create(member);
   }

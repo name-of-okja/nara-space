@@ -12,6 +12,13 @@ memberRoutes.get(
   validationQuery(GetMembersFilterDto),
   MemberController.getMembers
 );
+
+memberRoutes.get(
+  '/download',
+  validationQuery(GetMembersFilterDto),
+  MemberController.downloadCsv
+);
+
 memberRoutes.get('/:key', MemberController.findOneByKey);
 
 memberRoutes.post(
@@ -19,6 +26,7 @@ memberRoutes.post(
   validationBody(CreateMemberDto),
   MemberController.createMember
 );
+
 memberRoutes.delete('/:key', MemberController.deleteMemberByKey);
 
 export { memberRoutes };
