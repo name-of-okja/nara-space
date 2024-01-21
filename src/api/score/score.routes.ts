@@ -6,4 +6,5 @@ import { UpsertScoreDto } from './dto/upsert-score.dto';
 const scoreRoutes = express.Router();
 
 scoreRoutes.post('/', validationBody(UpsertScoreDto), ScoreController.upsert);
+
 export { scoreRoutes };

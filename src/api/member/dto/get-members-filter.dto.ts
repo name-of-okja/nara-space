@@ -2,6 +2,12 @@ import { Expose } from 'class-transformer';
 import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 export class GetMembersFilterDto {
+  @IsString()
+  @IsOptional()
+  @MaxLength(10)
+  @Expose()
+  osm_id?: string;
+
   @IsOptional()
   @Matches(RegExp('[0-9]{4}-[0-9]{2}-[0-9]{2}$'), {
     message: 'must match format yyyy-MM-dd',

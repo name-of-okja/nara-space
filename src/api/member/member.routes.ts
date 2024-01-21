@@ -14,7 +14,7 @@ memberRoutes.get(
 );
 
 memberRoutes.get(
-  '/download',
+  '/csv/download',
   validationQuery(GetMembersFilterDto),
   MemberController.downloadCsv
 );

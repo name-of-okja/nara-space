@@ -1,15 +1,7 @@
-import {
-  And,
-  Between,
-  FindManyOptions,
-  LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
-} from 'typeorm';
+import { FindManyOptions } from 'typeorm';
 import { AppDataSource } from '../../data-source';
-import { Member } from '../../entity';
+import { District, Member } from '../../entity';
 import { AbstractRepository } from '../../libs/common';
-import { GetMembersFilterDto } from './dto/get-members-filter.dto';
 
 export class MemberRepository extends AbstractRepository<Member> {
   constructor(
@@ -18,27 +10,24 @@ export class MemberRepository extends AbstractRepository<Member> {
     super('Member', memberRepository);
   }
 
-  async findByFilter(filter: GetMembersFilterDto) {
-    const query: FindManyOptions<Member> = {
-      where: {
-        nickname: filter.nickname && Like('%' + filter.nickname + '%'),
-        name: filter.name && Like('%' + filter.name + '%'),
-        birthday:
-          filter.start_date && filter.end_date
-            ? Between(filter.start_date, filter.end_date)
-            : filter.start_date
-            ? MoreThanOrEqual(filter.start_date)
-            : filter.end_date
-            ? LessThanOrEqual(filter.end_date)
-            : undefined,
-      },
-      relations: { scores: true },
-    };
-
-    return this.memberRepository.find(query);
-  }
-
   async validationNickname(nickname: string): Promise<boolean> {
     return this.memberRepository.existsBy({ nickname });
+  }
+
+  async membersInSpecificDistrict(osm_id: string) {
+    const geo = await this.entityManager.findOneBy(District, { osm_id });
+
+    if (!geo) {
+      return [];
+    }
+
+    return this.memberRepository
+      .createQueryBuilder('member')
+      .select(['member.id'])
+      .where(`ST_Within(member.location, ST_GeomFromGeoJSON(:geometry))`, {
+        geometry: JSON.stringify(geo.geometry),
+      })
+      .getMany()
+      .then((values) => values.map((value) => value.id));
   }
 }
