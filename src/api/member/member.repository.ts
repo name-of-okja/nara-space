@@ -1,4 +1,3 @@
-import { FindManyOptions } from 'typeorm';
 import { AppDataSource } from '../../data-source';
 import { District, Member } from '../../entity';
 import { AbstractRepository } from '../../libs/common';

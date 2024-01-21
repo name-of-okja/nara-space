@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '../libs/common';
 
 export function errorMiddleware(
   err: any,

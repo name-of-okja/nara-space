@@ -1,4 +1,3 @@
-import { plainToInstance } from 'class-transformer';
 import { MemberService } from '../member/member.service';
 import { UpsertScoreDto } from './dto/upsert-score.dto';
 import { ScoreRepository } from './score.repository';

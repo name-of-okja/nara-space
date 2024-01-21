@@ -61,7 +61,7 @@ export class MemberController {
     try {
       const filter = req.query as GetMembersFilterDto;
       const members = await new MemberService().findByFilter(filter);
-      console.log(members);
+
       const csv = await json2csv.parseAsync(
         plainToInstance(DownloadMemberDto, members, {
           excludeExtraneousValues: true,

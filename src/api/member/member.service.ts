@@ -1,4 +1,3 @@
-import { plainToInstance } from 'class-transformer';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetMembersFilterDto } from './dto/get-members-filter.dto';
 import { MemberRepository } from './member.repository';
@@ -52,11 +51,7 @@ export class MemberService {
       throw new BadRequestException(`nickname is exist`);
     }
 
-    const member = plainToInstance(Member, payload, {
-      excludeExtraneousValues: true,
-    });
-
-    return this.memberRepository.create(member);
+    return this.memberRepository.create(new Member(payload));
   }
 
   async deleteByKey(where: FindOptionsWhere<Member>) {
