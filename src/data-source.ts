@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import * as fs from 'fs';
 import { env } from './libs/common';
 import { District, Member, Score } from './entity';
+import path = require('path');
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -71,18 +72,18 @@ export async function databaseInit() {
 }
 
 const memberJsonStream = new Observable<string>((sub) => {
-  sub.next(__dirname + '/data/user_data/user01.json');
-  sub.next(__dirname + '/data/user_data/user02.json');
-  sub.next(__dirname + '/data/user_data/user03.json');
-  sub.next(__dirname + '/data/user_data/user04.json');
-  sub.next(__dirname + '/data/user_data/user05.json');
-  sub.next(__dirname + '/data/user_data/user06.json');
-  sub.next(__dirname + '/data/user_data/user07.json');
-  sub.next(__dirname + '/data/user_data/user08.json');
-  sub.next(__dirname + '/data/user_data/user09.json');
-  sub.next(__dirname + '/data/user_data/user10.json');
-  sub.next(__dirname + '/data/user_data/user11.json');
-  sub.next(__dirname + '/data/user_data/user12.json');
+  sub.next(path.join(__dirname, '../data/user_data/user01.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user02.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user03.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user04.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user05.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user06.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user07.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user08.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user09.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user10.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user11.json'));
+  sub.next(path.join(__dirname, '../data/user_data/user12.json'));
   sub.complete();
 }).pipe(
   map((path) => {
@@ -93,7 +94,7 @@ const memberJsonStream = new Observable<string>((sub) => {
 );
 
 const districtGeoJsonStream = new Observable<string>((sub) => {
-  sub.next(__dirname + '/data/korea.geojson');
+  sub.next(path.join(__dirname, '../data/korea.geojson'));
   sub.complete();
 }).pipe(
   map((path) => {
