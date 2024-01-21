@@ -1,5 +1,5 @@
 import { AppDataSource } from '../../data-source';
-import { District, Member, Score } from '../../entity';
+import { Score } from '../../entity';
 import { AbstractRepository } from '../../libs/common';
 
 export class ScoreRepository extends AbstractRepository<Score> {
