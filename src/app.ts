@@ -2,15 +2,35 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import apiRoutes from './api/api.routes';
 import { errorMiddleware } from './middleware';
+import * as swaggerUi from 'swagger-ui-express';
+import * as YAML from 'yamljs';
+import * as path from 'path';
 
 const app = express();
 
-app.use(express.json());
+// Middleware
+{
+  app.use(express.json());
+}
 
-app.use('/api', apiRoutes);
-app.get('*', (req: Request, res: Response) => {
-  res.status(505).json({ message: 'Bad Request' });
-});
+// Routing
+{
+  const swaggerSpec = YAML.load(path.join(__dirname, '../dist/swagger.yaml'));
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, { customSiteTitle: 'Nara Space' })
+  );
+  app.use('/api', apiRoutes);
+}
 
-app.use(errorMiddleware);
+// Error Handler
+{
+  app.get('*', (req: Request, res: Response) => {
+    res.status(505).json({ message: 'Bad Request' });
+  });
+
+  app.use(errorMiddleware);
+}
+
 export default app;

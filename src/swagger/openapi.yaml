@@ -1,0 +1,378 @@
+openapi: 3.1.0
+info:
+  title: Nara Space
+  description: nara space
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:3005/api'
+tags:
+  - name: Member
+  - name: Score
+paths:
+  /member:
+    get:
+      summary: Get a list of members
+      operationId: getMembers
+      tags:
+        - Member
+      parameters:
+        - in: query
+          name: GetMembersFilterDto
+          schema:
+            $ref: '#/components/schemas/GetMembersFilterDto'
+          required: false
+          description: Optional filter by Member
+      responses:
+        '200':
+          description: A list of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+
+    post:
+      summary: Create a new member
+      operationId: createMember
+      tags:
+        - Member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberDto'
+      responses:
+        '201':
+          description: Member created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Nickname is exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpException'
+
+  /member/csv/download:
+    get:
+      summary: Download a CSV file of members
+      operationId: downloadCsv
+      tags:
+        - Member
+      parameters:
+        - in: query
+          name: GetMembersFilterDto
+          schema:
+            $ref: '#/components/schemas/GetMembersFilterDto'
+          required: false
+          description: Optional filter by Member
+      responses:
+        '200':
+          description: CSV file of members
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+  /member/{key}:
+    get:
+      summary: Find a member by key {id | nickname}
+      operationId: findOneByKey
+      tags:
+        - Member
+      parameters:
+        - in: path
+          name: key
+          required: true
+          schema:
+            type: string
+          description: Member ID or Nickname
+      responses:
+        '200':
+          description: Member details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          description: Not Found Member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpException'
+
+    delete:
+      summary: Delete a member by key {id | nickname}
+      operationId: deleteMemberByKey
+      tags:
+        - Member
+      parameters:
+        - in: path
+          name: key
+          required: true
+          schema:
+            type: string
+          description: Member ID or Nickname
+      responses:
+        '200':
+          description: Member deleted
+        '404':
+          description: Not Found Member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpException'
+
+  /score:
+    post:
+      summary: Upsert a score
+      operationId: upsert
+      tags:
+        - Score
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertScoreDto'
+      responses:
+        '200':
+          description: Score upserted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Score'
+
+  /score/average/{osm_id}:
+    get:
+      summary: Get average score for a specific district
+      operationId: average
+      tags:
+        - Score
+      parameters:
+        - in: path
+          name: osm_id
+          required: true
+          schema:
+            type: string
+          description: OSM ID of the district
+      responses:
+        '200':
+          description: Average score per subject
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  math:
+                    type: number
+                    default: 0
+                  science:
+                    type: number
+                    default: 0
+                  english:
+                    type: number
+                    default: 0
+        '404':
+          description: Required osm_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpException'
+
+components:
+  schemas:
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          maxLength: 10
+          nullable: false
+        nickname:
+          type: string
+          maxLength: 20
+          nullable: false
+        birthday:
+          type: string
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          nullable: false
+        location:
+          type: object
+          nullable: false
+          properties:
+            type:
+              type: string
+              enum: [Point]
+            coordinates:
+              type: array
+              items:
+                type: number
+        createdAt:
+          type: string
+          format: date-time
+          nullable: false
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: false
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Score'
+
+    Score:
+      type: object
+      properties:
+        memberId:
+          type: integer
+        subject:
+          type: string
+          enum: [math, science, english]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+          nullable: false
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: false
+
+    District:
+      type: object
+      properties:
+        id:
+          type: integer
+        osm_id:
+          type: string
+          maxLength: 10
+          nullable: false
+        geometry:
+          type: object
+          nullable: false
+          properties:
+            type:
+              type: string
+              enum: [MultiPolygon]
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+
+    CreateMemberDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 10
+        nickname:
+          type: string
+          maxLength: 20
+        birthday:
+          type: string
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+        location:
+          $ref: '#/components/schemas/PointGeoMetry'
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScoreDto'
+          nullable: true
+
+    DownloadMemberDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        nickname:
+          type: string
+        birthday:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    GetMembersFilterDto:
+      type: object
+      properties:
+        osm_id:
+          type: string
+          maxLength: 10
+          nullable: true
+          example: '-16024347'
+        start_date:
+          type: string
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          nullable: true
+          example: '2022-01-01'
+        end_date:
+          type: string
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          nullable: true
+          example: '2023-12-25'
+        name:
+          type: string
+          maxLength: 10
+          nullable: true
+          example: '홍'
+        nickname:
+          type: string
+          maxLength: 20
+          nullable: true
+          example: 'um'
+
+    ScoreDto:
+      type: object
+      properties:
+        subject:
+          type: string
+          enum: [math, science, english]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    UpsertScoreDto:
+      allOf:
+        - $ref: '#/components/schemas/ScoreDto'
+        - type: object
+          properties:
+            memberId:
+              type: integer
+
+    PointGeoMetry:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [Point]
+        coordinates:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: number
+
+    HttpException:
+      type: object
+      properties:
+        message:
+          type: string
