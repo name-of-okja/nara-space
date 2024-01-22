@@ -16,8 +16,8 @@ nest.js의 모듈 시스템을 모티브 함
   - common
     - config/env.ts :: .env 파일을 핸들링 하는 파일 nest.js의 ConfigModule을 모티브
     - database
-    - abstract.entity.ts :: entity의 base class
-    - abstract.repository.ts :: typeorm의 base repository > 기본적인 crud 지원
+      - abstract.entity.ts :: entity의 base class
+      - abstract.repository.ts :: typeorm의 base repository > 기본적인 crud 지원
     - structure :: 구조체 > 보통 사용하는 types 혹은 interfaces 와 유사한 포지션
 - middleware
   - error.middleware.ts :: 에러 핸들링
