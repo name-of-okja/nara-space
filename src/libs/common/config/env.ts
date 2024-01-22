@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 function required(key: string, defaultValue: string | undefined = undefined) {
   const value = process.env[key] || defaultValue;
   if (value === undefined) {
@@ -8,12 +12,12 @@ function required(key: string, defaultValue: string | undefined = undefined) {
 }
 
 export const env = {
-  port: required('PORT', '3005'),
+  port: required('PORT'),
   db: {
-    host: required('DB_HOST', 'localhost'),
-    port: required('DB_PORT', '5432'),
-    username: required('DB_USERNAME', 'nara'),
-    password: required('DB_PASSWORD', '1234'),
-    database: required('DB_DATABASE', 'nara-space'),
+    host: required('DB_HOST'),
+    port: required('DB_PORT'),
+    username: required('DB_USERNAME'),
+    password: required('DB_PASSWORD'),
+    database: required('DB_DATABASE'),
   },
 };

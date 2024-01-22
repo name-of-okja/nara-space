@@ -10,7 +10,7 @@ services:
     restart: on-failure
     command: ['npm', 'run', 'start:migration']
     env_file:
-      - ./src/.env
+      - .env.docker
 
   pg:
     image: postgis/postgis
