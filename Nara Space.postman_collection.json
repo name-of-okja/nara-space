@@ -1,0 +1,503 @@
+{
+	"info": {
+		"_postman_id": "e6d3af7b-0827-4cd1-9ea7-dd543a258af5",
+		"name": "Nara Space",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18428958"
+	},
+	"item": [
+		{
+			"name": "Member",
+			"item": [
+				{
+					"name": "Get Members",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body is array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member?osm_id=-16024347",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member"
+							],
+							"query": [
+								{
+									"key": "osm_id",
+									"value": "-16024347"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Craete Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('id');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('name');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('nickname');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('birthday');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('location');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('scores');\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set('createdMemberId', jsonData.id);\r",
+									"pm.collectionVariables.set('createdMemberNickname', jsonData.nickname);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" :\"이권희\",\r\n    \"nickname\" : \"권희님1\",\r\n    \"birthday\": \"1995-08-28\",\r\n    \"location\": {\r\n        \"type\":\"Point\",\r\n        \"coordinates\" : [1,3]\r\n    },\r\n    \"scores\": [{\"subject\":\"math\",\"score\":9}]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/member",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Member  by memberId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body check\", function () {\r",
+									"    pm.expect(jsonData.nickname).to.equal(pm.collectionVariables.get('createdMemberNickname'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member/{{createdMemberId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member",
+								"{{createdMemberId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Member  by nickname",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body check\", function () {\r",
+									"    pm.expect(jsonData.id).to.equal(+pm.collectionVariables.get('createdMemberId'));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member/{{createdMemberNickname}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member",
+								"{{createdMemberNickname}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download CSV",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Headers Content-Type is text/csv\", function () {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.equal('text/csv');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member/csv/download?osm_id=-16024347",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member",
+								"csv",
+								"download"
+							],
+							"query": [
+								{
+									"key": "osm_id",
+									"value": "-16024347"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body check\", function () {\r",
+									"    pm.expect(jsonData.nickname).to.equal(pm.collectionVariables.get('createdMemberNickname'));\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set('createdMemberId', '');\r",
+									"pm.collectionVariables.set('createdMemberNickname', '');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member/{{createdMemberId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member",
+								"{{createdMemberId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Score",
+			"item": [
+				{
+					"name": "Craete Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('id');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('name');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('nickname');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('birthday');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('location');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('scores');\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set('createdMemberId', jsonData.id);\r",
+									"pm.collectionVariables.set('createdMemberNickname', jsonData.nickname);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" :\"이권희\",\r\n    \"nickname\" : \"권희님1\",\r\n    \"birthday\": \"1995-08-28\",\r\n    \"location\": {\r\n        \"type\":\"Point\",\r\n        \"coordinates\" : [1,3]\r\n    },\r\n    \"scores\": [{\"subject\":\"math\",\"score\":9}]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/member",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upsert Score",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('subject');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('score');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('memberId');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"memberId\":{{createdMemberId}},\r\n    \"subject\":\"english\",\r\n    \"score\":77\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/score",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"score"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Score Average",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body contains expected properties\", function () {\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('math');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('science');\r",
+									"    pm.expect(jsonData).to.haveOwnProperty('english');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/score/average/-16024347",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"score",
+								"average",
+								"-16024347"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body check\", function () {\r",
+									"    pm.expect(jsonData.nickname).to.equal(pm.collectionVariables.get('createdMemberNickname'));\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set('createdMemberId', '');\r",
+									"pm.collectionVariables.set('createdMemberNickname', '');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/member/{{createdMemberId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"member",
+								"{{createdMemberId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:3005",
+			"type": "string"
+		},
+		{
+			"key": "createdMemberId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "createdMemberNickname",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -16,3 +16,10 @@ docker-compose up --build
 - npm run migration
 - npm run start
 ```
+
+## [Test] Postman
+
+```bash
+file : Nara Space.postman_collection.json
+guide : 포스트맨_테스트_가이드.gif
+```
