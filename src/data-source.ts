@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { env } from './libs/common';
 import { District, Member, Score } from './entity';
 import path = require('path');
+import { logger } from './libs/common/logger';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -20,14 +21,18 @@ export const AppDataSource = new DataSource({
   subscribers: [],
 });
 
-export async function databaseInit() {
+export async function databaseInit(retryCount = 0) {
+  if (retryCount !== 0) {
+    logger.error(`Retry Database Init : ${retryCount}`);
+  }
+
   AppDataSource.initialize()
     .then(async () => {
       // Member Data Seeding
       const memberRepo = AppDataSource.getRepository(Member);
 
       if (!(await memberRepo.exists())) {
-        console.log('[Start] Member Data Seeding ...');
+        logger.info('[Start] Member Data Seeding ...');
 
         memberJsonStream.subscribe(async (datas) => {
           const members: Member[] = datas.map((data) => ({
@@ -40,7 +45,7 @@ export async function databaseInit() {
 
           // issue : 대량의 데이터를 save시 오류가 발생하여 chunk로 나눠서 실행
           await memberRepo.save(members, { chunk: members.length / 1000 });
-          console.log('[End] Member Data Seeding ...');
+          logger.info('[End] Member Data Seeding ...');
         });
       }
 
@@ -48,7 +53,7 @@ export async function databaseInit() {
       const districtRepo = AppDataSource.getRepository(District);
 
       if (!(await districtRepo.exists())) {
-        console.log('[Start] District Data Seeding ...');
+        logger.info('[Start] District Data Seeding ...');
 
         districtGeoJsonStream.subscribe({
           next: async (data) => {
@@ -63,12 +68,19 @@ export async function databaseInit() {
               chunk: districts.length / 1000,
             });
 
-            console.log('[End] District Data Seeding ...');
+            logger.info('[End] District Data Seeding ...');
           },
         });
       }
     })
-    .catch(console.error);
+    .catch((error) => {
+      logger.error(error);
+      if (retryCount !== 10) {
+        setTimeout(() => {
+          databaseInit(retryCount + 1);
+        }, 3000);
+      }
+    });
 }
 
 const memberJsonStream = new Observable<string>((sub) => {

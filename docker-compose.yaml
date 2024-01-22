@@ -1,4 +1,17 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    ports:
+      - '3005:3005'
+    depends_on:
+      - pg
+    restart: on-failure
+    command: ['npm', 'run', 'start:migration']
+    env_file:
+      - ./src/.env
+
   pg:
     image: postgis/postgis
     ports:
