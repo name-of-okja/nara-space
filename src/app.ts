@@ -5,12 +5,14 @@ import { errorMiddleware } from './middleware';
 import * as swaggerUi from 'swagger-ui-express';
 import * as YAML from 'yamljs';
 import * as path from 'path';
+import { morganMiddleware } from './libs/common/logger';
 
 const app = express();
 
 // Middleware
 {
   app.use(express.json());
+  app.use(morganMiddleware);
 }
 
 // Routing
