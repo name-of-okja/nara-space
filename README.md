@@ -1,3 +1,18 @@
-- Member 전체 조회 시 Pagination을 해야 할 것 같은데 요구 사항이 없으므로 제외
+## [Docker] Getting Started
 
-npx typeorm-ts-node-commonjs migration:generate ./src/migrations/init -d ./src/data-source.ts
+```bash
+docker-compose up
+or
+docker-compose up --build
+```
+
+## [Local] Getting Started
+
+```bash
+- set .env
+- npm install
+- npm run build
+- npm run swagger:gen
+- npm run migration
+- npm run start
+```
